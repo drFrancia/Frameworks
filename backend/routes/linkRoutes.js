@@ -29,6 +29,7 @@ router.get('/', async (req, res) => {
 router.get('/search', async (req, res) => {
     try {
         const { tag } = req.query;
+        if (!tag) return res.status(400).json({ error: 'Debes proporcionar un tag para buscar.' });
         const links = await Link.find({ tags: tag });
         res.json(links);
     } catch (error) {
@@ -64,5 +65,17 @@ router.post('/:id/comment', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+// Obtener los detalles de un enlace por ID
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const link = await Link.findById(id);
+        if (!link) throw new Error('Enlace no encontrado');
+        res.json(link);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
 
 module.exports = router;
