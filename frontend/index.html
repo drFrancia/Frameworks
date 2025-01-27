@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Enlaces</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Organizador de Enlaces 🐈</h1>
+        <nav>
+        <button id="view-links">Ver Enlaces</button>
+        <button id="add-link">Añadir Enlace</button>
+        </nav>
+        <form id="filter-form">
+            <input type="text" id="filter-tag" placeholder="Filtrar por tag" required>
+            <button type="submit">Buscar</button>
+        </form>
+    </header>
+    <main id="app"></main>
+    <!-- <footer>
+        <p>Creado para salvar el Internet. 🐾</p>
+    </footer> -->
+    <script src="api.js"></script>
+    <script src="components/LinkList.js"></script>
+    <script src="components/LinkDetails.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
