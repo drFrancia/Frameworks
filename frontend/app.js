@@ -75,9 +75,9 @@ document.getElementById('add-comment-form').addEventListener('submit', async (e)
     }
 
     try {
-        await addComment(linkId, comment);
+        await addComment(link, comment);
         alert('Comentario agregado exitosamente.');
-        viewComments(linkId); // Recargar comentarios
+        viewComments(link); // Recargar comentarios
     } catch (error) {
         alert('Error al agregar comentario: ' + error.message);
     }

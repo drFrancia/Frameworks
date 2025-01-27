@@ -30,3 +30,12 @@ function renderLinkList(links) {
     });
     app.appendChild(list);
 }
+
+function loadLinkList() {
+    fetchLinks()
+        .then(links => renderLinkList(links))
+        .catch(error => {
+            alert('Error al cargar la lista de enlaces: ' + error.message);
+        });
+}
+

@@ -5,12 +5,23 @@ function renderLinkDetails(link) {
         <a href="${link.url}" target="_blank">${link.url}</a>
         <p>Tags: ${link.tags.join(', ')}</p>
         <p>Votos: ${link.votes}</p>
+        ${renderComments(link.comments)}
+        ${renderBackButton()}
+    `;
+}
+
+function renderComments(comments) {
+    return `
         <h3>Comentarios</h3>
         <ul>
-            ${link.comments.length > 0 
-                ? link.comments.map(comment => `<li>${comment}</li>`).join('') 
-                : '<li>No hay comentarios</li>'}
+            ${comments.length > 0
+                ? comments.map(comment => `<li>${comment}</li>`).join('')
+                : '<li>No hay comentarios</li>'
+            }
         </ul>
-        <button onclick="loadLinkList()">Volver</button>
     `;
+}
+
+function renderBackButton() {
+    return `<button onclick="loadLinkList()">Volver</button>`;
 }

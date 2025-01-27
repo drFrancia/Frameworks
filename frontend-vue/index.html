@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizador de Enlaces</title>
+  <script src="https://unpkg.com/vue@3"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Organizador de Enlaces 🐈</h1>
+      <nav>
+        <button @click="loadLinks">Ver Enlaces</button>
+        <button @click="showAddForm">Añadir Enlace</button>
+      </nav>
+      <form @submit.prevent="filterLinks">
+        <input type="text" v-model="filterTag" placeholder="Filtrar por tag" required>
+        <button type="submit">Buscar</button>
+      </form>
+    </header>
+    <main>
+      <div v-if="view === 'list'">
+        <h2>Lista de Enlaces</h2>
+        <ul>
+          <li v-for="link in links" :key="link._id">
+            <a :href="link.url" target="_blank">{{ link.url }}</a>
+            <p>Tags: {{ link.tags.join(', ') }}</p>
+            <p>Votos: {{ link.votes }}</p>
+            <button @click="voteLink(link._id)">Votar</button>
+            <button @click="viewDetails(link._id)">Comentarios</button>
+          </li>
+        </ul>
+      </div>
+      <div v-if="view === 'details'">
+        <h2>Detalles del Enlace</h2>
+        <a :href="currentLink.url" target="_blank">{{ currentLink.url }}</a>
+        <p>Tags: {{ currentLink.tags.join(', ') }}</p>
+        <p>Votos: {{ currentLink.votes }}</p>
+        <h3>Comentarios</h3>
+        <ul>
+          <li v-for="comment in currentLink.comments" :key="comment">{{ comment }}</li>
+        </ul>
+        <button @click="loadLinks">Volver</button>
+      </div>
+      <div v-if="view === 'add'">
+        <h2>Añadir Enlace</h2>
+        <form @submit.prevent="addLink">
+          <input type="url" v-model="newLink.url" placeholder="URL" required>
+          <input type="text" v-model="newLink.tags" placeholder="Tags (separados por comas)" required>
+          <button type="submit">Guardar</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          view: 'list', // 'list', 'details', 'add'
+          links: [],
+          currentLink: null,
+          newLink: { url: '', tags: '' },
+          filterTag: '',
+          API_URL: 'http://localhost:5000/api/links'
+        };
+      },
+      methods: {
+        async loadLinks() {
+          this.view = 'list';
+          try {
+            const response = await fetch(this.API_URL);
+            this.links = await response.json();
+          } catch (error) {
+            alert('Error al cargar los enlaces: ' + error.message);
+          }
+        },
+        async viewDetails(id) {
+          try {
+            const response = await fetch(`${this.API_URL}/${id}`);
+            this.currentLink = await response.json();
+            this.view = 'details';
+          } catch (error) {
+            alert('Error al cargar los detalles: ' + error.message);
+          }
+        },
+        async addLink() {
+          try {
+            const response = await fetch(this.API_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                url: this.newLink.url,
+                tags: this.newLink.tags.split(',').map(tag => tag.trim())
+              })
+            });
+            if (!response.ok) throw new Error('Error al crear el enlace');
+            alert('Enlace creado correctamente');
+            this.loadLinks();
+          } catch (error) {
+            alert('Error al crear el enlace: ' + error.message);
+          }
+        },
+        async voteLink(id) {
+          try {
+            await fetch(`${this.API_URL}/${id}/vote`, { method: 'PATCH' });
+            alert('Voto registrado correctamente');
+            this.loadLinks();
+          } catch (error) {
+            alert('Error al votar: ' + error.message);
+          }
+        },
+        async filterLinks() {
+          try {
+            const response = await fetch(`${this.API_URL}/search?tag=${this.filterTag}`);
+            this.links = await response.json();
+            this.view = 'list';
+          } catch (error) {
+            alert('Error al filtrar enlaces: ' + error.message);
+          }
+        },
+        showAddForm() {
+          this.view = 'add';
+        }
+      },
+      mounted() {
+        this.loadLinks();
+      }
+    });
+
+    app.mount('#app');
+  </script>
+</body>
+</html>
